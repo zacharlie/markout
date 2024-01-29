@@ -3,7 +3,7 @@ package lib
 import (
 	"errors"
 	"fmt"
-	"io"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,50 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func ConvertMarkdown(cmd *cobra.Command, args []string) {
-	useStdin, _ := cmd.Flags().GetBool("stdin")
-	outputDir, _ := cmd.Flags().GetString("outdir")
-
-	if len(args) == 0 && !useStdin {
-		log.Fatalf("Please provide at least one input file or use stdin flag (-s)")
-	}
-
-	if useStdin {
-		content, err := io.ReadAll(os.Stdin)
-		if err != nil {
-			log.Fatalf("error reading from stdin: %v", err)
-		}
-
-		result, err := processContent(content, "MarkOut")
-		if err != nil {
-			fmt.Printf("Error processing stdin: %v\n", err)
-		}
-
-		err = writeOutput(cmd, result, filepath.Join(outputDir, "MarkOut.html"))
-		if err != nil {
-			log.Fatalf("error writing output: %v", err)
-		}
-	} else {
-		for _, inputFile := range args {
-			content, err := readInput(inputFile)
-			if err != nil {
-				log.Fatalf("error reading from file: %v", err)
-			}
-
-			result, err := processContent(content,
-				strings.TrimSuffix(filepath.Base(inputFile), filepath.Ext(inputFile)))
-			if err != nil {
-				log.Fatalf("Error processing file %s: %v\n", inputFile, err)
-			}
-			err = writeOutput(cmd, result, inputFile)
-			if err != nil {
-				log.Fatalf("error writing output: %v", err)
-			}
-		}
-	}
-}
-
-func writeOutput(cmd *cobra.Command, result []byte, inputFile string) error {
+func WriteOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 	useStdin, _ := cmd.Flags().GetBool("stdin")
 	defaultExtension, _ := cmd.Flags().GetString("extension")
 	outputDir, _ := cmd.Flags().GetString("outdir")
@@ -101,22 +58,25 @@ func writeOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 	}
 }
 
-func processContent(content []byte, title string) ([]byte, error) {
+func ProcessContent(content []byte, title string, useRawHtml bool) ([]byte, error) {
 	var htmlContent strings.Builder
-	htmlContent.WriteString("<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\"")
-	htmlContent.WriteString(" content=\"width=device-width, initial-scale=1.0\">\n    <title>")
+	if !useRawHtml {
+		htmlContent.WriteString("<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\"")
+		htmlContent.WriteString(" content=\"width=device-width, initial-scale=1.0\">\n    <title>")
 
-	htmlContent.WriteString(string(title))
+		htmlContent.WriteString(string(title))
 
-	htmlContent.WriteString("</title>\n  </head>\n  <body>\n")
-
+		htmlContent.WriteString("</title>\n  </head>\n  <body>\n")
+	}
 	htmlContent.Write(markdown.ToHTML([]byte(content), nil, nil))
 
-	htmlContent.WriteString("  </body>\n</html>\n")
+	if !useRawHtml {
+		htmlContent.WriteString("  </body>\n</html>\n")
+	}
 	return []byte(htmlContent.String()), nil
 }
 
-func readInput(inputFile string) ([]byte, error) {
+func ReadInput(inputFile string) ([]byte, error) {
 	// Read from file
 	content, err := os.ReadFile(inputFile)
 	if err != nil {
@@ -124,4 +84,47 @@ func readInput(inputFile string) ([]byte, error) {
 	}
 
 	return content, nil
+}
+
+func FindMarkdownFiles(root string, recurse bool) ([]string, error) {
+	var matches []string
+	patterns := []string{"*.md", "*.markdown"}
+
+	walkFunc := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !d.IsDir() {
+			for _, pattern := range patterns {
+				if matched, err := filepath.Match(pattern, d.Name()); err == nil && matched {
+					matches = append(matches, path)
+					break // Stop checking other patterns once a match is found
+				}
+			}
+		}
+
+		return nil
+	}
+
+	if recurse {
+		err := filepath.WalkDir(root, walkFunc)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		entries, err := os.ReadDir(root)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, entry := range entries {
+			err := walkFunc(filepath.Join(root, entry.Name()), entry, nil)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return matches, nil
 }

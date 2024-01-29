@@ -15,8 +15,8 @@ func TestConvertMarkdown(t *testing.T) {
 		expected   string
 	}{
 		{
-			inputFile:  "../tests/test.md",
-			outputFile: "../tests/test.html",
+			inputFile:  "../tests/data/test.md",
+			outputFile: "../tests/data/test.html",
 			expected:   "<h1>Test</h1>\n\n<p>Test Content</p>\n",
 		},
 	}

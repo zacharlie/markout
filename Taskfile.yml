@@ -23,14 +23,14 @@ tasks:
       - go mod tidy
   
   run:
-    desc: Run the application to print example input to stdout
+    desc: Run the application to print all relative inputs to stdout
     cmds:
-      - ./markout{{exeExt}} example.md -o
+      - ./markout{{exeExt}} -o
 
   example:
     desc: Run the application to generate outputs in directory
     cmds:
-      - ./markout{{exeExt}} example.md -d ./outputs
+      - ./markout{{exeExt}} example.md -d ./markoutput
 
   all: # Define the default task
     cmds:
