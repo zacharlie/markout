@@ -1,3 +1,27 @@
+*.ignore
+.ignore/
+# outputs
+outputs/
+*.html
+# configs, logs, and data files
+*.conf
+*.log
+*.json
+*.parquet
+*.db
+*.database
+*.sqlite
+
+tmp/
+bin/
+
+
+markout
+markout.exe
+*.zip
+*.tar*
+*.7z
+
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #

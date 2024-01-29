@@ -1,0 +1,39 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - go build -o markout{{exeExt}} cmd/markout/main.go
+
+  test:
+    cmds:
+      - go test -v ./...
+
+  lint:
+    cmds:
+      - gofmt -l .
+      - go vet ./...
+
+  clean:
+    cmds:
+      - go clean -cache
+  
+  tidy:
+    cmds:
+      - go mod tidy
+  
+  run:
+    desc: Run the application to print example input to stdout
+    cmds:
+      - ./markout{{exeExt}} example.md -o
+
+  example:
+    desc: Run the application to generate outputs in directory
+    cmds:
+      - ./markout{{exeExt}} example.md -d ./outputs
+
+  all: # Define the default task
+    cmds:
+      - task lint
+      - task test
+      - task build
