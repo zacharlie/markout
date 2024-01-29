@@ -1,8 +1,8 @@
 # MarkOut
 
-Simplistic cli built with cobra for converting markdown files to html.
+Simple markdown parsing cli for md => html
 
-This is not a static site generator. This is not pandoc. This is Markdown in, Markup (in HTML) out.
+> This is not a static site generator. This is not pandoc. It's Markdown in, HTML out.
 
 Accepts file list or stdin, writes files to directory or logs result to stdout.
 
@@ -13,7 +13,7 @@ markout input.md -o > output.html
 ## Usage
 
 ```text
-> markout --help
+$ markout --help
 Convert Markdown files to HTML
 
 Usage:
@@ -21,10 +21,10 @@ Usage:
 
 Flags:
   -e, --extension string   Output file extension (default ".html")
+  -f, --full               Write complete HTML page (including head, with md content in body)
   -h, --help               help for markout
   -d, --outdir string      Output directory (default "./markoutput")
   -w, --overwrite          Overwrite existing output files
-  -x, --raw                Raw transform of content to HTML (no page head and body)
   -r, --recurse            Run recursively on subdirectory contents
   -s, --stdin              Read input from stdin
   -o, --stdout             Print output to stdout
@@ -87,9 +87,32 @@ cat example.md | markout -s -o > mypath/example.html
 Skip the page wrapping
 
 ```sh
-$ echo "# Hello World" | markout -x -s -o
+$ echo "# Hello World" | markout -s -o
+```
+
+```html
 <h1>Hello World</h1>
 
+```
+
+Add the page wrapping
+
+```sh
+$ echo "# Hello World" | markout -f -s -o
+```
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkOut</title>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+  </body>
+</html>
 ```
 
 Read in content from heredoc

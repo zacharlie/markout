@@ -24,7 +24,7 @@ var (
 	useStdin         bool
 	useStdout        bool
 	runRecursive     bool
-	useRawHtml       bool
+	useFullHtml      bool
 )
 
 func init() {
@@ -34,7 +34,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&useStdin, "stdin", "s", false, "Read input from stdin")
 	rootCmd.Flags().BoolVarP(&useStdout, "stdout", "o", false, "Print output to stdout")
 	rootCmd.Flags().BoolVarP(&runRecursive, "recurse", "r", false, "Run recursively on subdirectory contents")
-	rootCmd.Flags().BoolVarP(&useRawHtml, "raw", "x", false, "Raw transform of content to HTML (no page head and body)")
+	rootCmd.Flags().BoolVarP(&useFullHtml, "full", "f", false, "Write complete HTML page (including head, with md content in body)")
 }
 
 func convertMarkdown(cmd *cobra.Command, args []string) {
@@ -61,7 +61,7 @@ func convertMarkdown(cmd *cobra.Command, args []string) {
 			log.Fatalf("error reading from stdin: %v", err)
 		}
 
-		result, err := lib.ProcessContent(content, "MarkOut", useRawHtml)
+		result, err := lib.ProcessContent(content, "MarkOut", useFullHtml)
 		if err != nil {
 			log.Fatalf("error processing stdin: %v", err)
 		}
@@ -79,7 +79,7 @@ func convertMarkdown(cmd *cobra.Command, args []string) {
 
 			result, err := lib.ProcessContent(content,
 				strings.TrimSuffix(filepath.Base(inputFile), filepath.Ext(inputFile)),
-				useRawHtml)
+				useFullHtml)
 			if err != nil {
 				log.Fatalf("Error processing file %s: %v\n", inputFile, err)
 			}

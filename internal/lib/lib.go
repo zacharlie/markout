@@ -58,9 +58,9 @@ func WriteOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 	}
 }
 
-func ProcessContent(content []byte, title string, useRawHtml bool) ([]byte, error) {
+func ProcessContent(content []byte, title string, useFullHtml bool) ([]byte, error) {
 	var htmlContent strings.Builder
-	if !useRawHtml {
+	if useFullHtml {
 		htmlContent.WriteString("<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\"")
 		htmlContent.WriteString(" content=\"width=device-width, initial-scale=1.0\">\n    <title>")
 
@@ -70,7 +70,7 @@ func ProcessContent(content []byte, title string, useRawHtml bool) ([]byte, erro
 	}
 	htmlContent.Write(markdown.ToHTML([]byte(content), nil, nil))
 
-	if !useRawHtml {
+	if useFullHtml {
 		htmlContent.WriteString("  </body>\n</html>\n")
 	}
 	return []byte(htmlContent.String()), nil
