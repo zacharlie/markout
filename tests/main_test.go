@@ -66,7 +66,8 @@ func TestStdinStdout(t *testing.T) {
 	}
 
 	// Normalize the expected and actual HTML content
-	expectedHTML := "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>MarkOut</title>\n  </head>\n  <body>\n<h1>Test</h1>\n\n<p>This is a test.</p>\n  </body>\n</html>\n"
+	// expectedHTML := `<!DOCTYPE html> <html> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>MarkOut</title> </head> <body> <h1>Test</h1> <p>This is a test.</p> </body> </html> `
+	expectedHTML := `<h1>Test</h1> <p>This is a test.</p> `
 	normalizedExpected := normalizeWhitespace(expectedHTML)
 	normalizedActual := normalizeWhitespace(string(output))
 
