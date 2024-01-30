@@ -3,6 +3,7 @@ version: '3'
 tasks:
   build:
     cmds:
+      - go generate ./...
       - go build -o markout{{exeExt}} cmd/markout/main.go
 
   test:
@@ -21,19 +22,24 @@ tasks:
   tidy:
     cmds:
       - go mod tidy
+      # add preprocessor dependencies used by generate but ignored by build
+      - go get github.com/tdewolff/minify/v2
   
   run:
     desc: Run the application to print all relative inputs to stdout
     cmds:
-      - ./markout{{exeExt}} -o
+      - task build
+      - ./markout{{exeExt}} {{.CLI_ARGS}}
 
   example:
-    desc: Run the application to generate outputs in directory
+    desc: Run an example to stdout
     cmds:
-      - ./markout{{exeExt}} example.md -d ./markoutput
+      - ./markout{{exeExt}} ./examples/example.md -o
 
-  all: # Define the default task
+  default:
     cmds:
+      - task clean
+      - task tidy
       - task lint
       - task test
       - task build

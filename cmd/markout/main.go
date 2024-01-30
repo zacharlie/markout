@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	lib "github.com/zacharlie/markout/internal/lib"
+	"github.com/zacharlie/markout/internal/lib"
 )
 
 var rootCmd = &cobra.Command{
@@ -20,24 +20,39 @@ var rootCmd = &cobra.Command{
 var (
 	outputDir        string
 	overwriteOutput  bool
-	defaultExtension string = ".html"
+	defaultExtension string
 	useStdin         bool
 	useStdout        bool
 	runRecursive     bool
 	useFullHtml      bool
+	useStyleTheme    string
+	useStyleFile     string
+	useStyleLink     string
 )
 
 func init() {
-	rootCmd.Flags().StringVarP(&outputDir, "outdir", "d", "./markoutput", "Output directory")
-	rootCmd.Flags().StringVarP(&defaultExtension, "extension", "e", ".html", "Output file extension")
-	rootCmd.Flags().BoolVarP(&overwriteOutput, "overwrite", "w", false, "Overwrite existing output files")
-	rootCmd.Flags().BoolVarP(&useStdin, "stdin", "s", false, "Read input from stdin")
-	rootCmd.Flags().BoolVarP(&useStdout, "stdout", "o", false, "Print output to stdout")
-	rootCmd.Flags().BoolVarP(&runRecursive, "recurse", "r", false, "Run recursively on subdirectory contents")
-	rootCmd.Flags().BoolVarP(&useFullHtml, "full", "f", false, "Write complete HTML page (including head, with md content in body)")
+	rootCmd.Flags().StringVarP(&outputDir, "outdir", "d", "./markoutput", `Output directory`)
+	rootCmd.Flags().StringVarP(&defaultExtension, "extension", "e", ".html", `Output file extension`)
+	rootCmd.Flags().BoolVarP(&overwriteOutput, "overwrite", "w", false, `Overwrite existing output files`)
+	rootCmd.Flags().BoolVarP(&useStdin, "stdin", "i", false, `Read input from stdin`)
+	rootCmd.Flags().BoolVarP(&useStdout, "stdout", "o", false, `Print output to stdout`)
+	rootCmd.Flags().BoolVarP(&runRecursive, "recurse", "r", false, `Run recursively on subdirectory contents`)
+	rootCmd.Flags().BoolVarP(&useFullHtml, "full", "f", false, `Write complete HTML page (including head, with md content in body)`)
+	rootCmd.Flags().StringVarP(&useStyleTheme, "theme", "t", "none", `A predefined css to embed. Options include "blank", "pandoc", and "retro".`)
+	rootCmd.Flags().StringVarP(&useStyleFile, "style", "s", "none", `Path to a css file. Contents are injected into a <style> block`)
+	rootCmd.Flags().StringVarP(&useStyleLink, "link", "l", "none", `Text value to insert into the href attribute of <link rel="stylesheet" />.`)
 }
 
 func convertMarkdown(cmd *cobra.Command, args []string) {
+	cssContent, err := lib.GetCssContent(
+		strings.ToLower(useStyleTheme),
+		strings.ToLower(useStyleFile),
+		strings.ToLower(useStyleLink),
+	)
+	if err != nil {
+		log.Fatalf("error getting css content: %v", err)
+	}
+
 	if len(args) == 0 && !useStdin {
 		// get current working directory
 		cwd, err := os.Getwd()
@@ -61,12 +76,12 @@ func convertMarkdown(cmd *cobra.Command, args []string) {
 			log.Fatalf("error reading from stdin: %v", err)
 		}
 
-		result, err := lib.ProcessContent(content, "MarkOut", useFullHtml)
+		result, err := lib.ProcessContent(content, cssContent, "MarkOut", useFullHtml)
 		if err != nil {
 			log.Fatalf("error processing stdin: %v", err)
 		}
 
-		err = lib.WriteOutput(cmd, result, filepath.Join(outputDir, "MarkOut.html"))
+		err = lib.WriteOutput(cmd, result, filepath.Join(outputDir, "MarkOut"+defaultExtension))
 		if err != nil {
 			log.Fatalf("error writing output: %v", err)
 		}
@@ -77,7 +92,7 @@ func convertMarkdown(cmd *cobra.Command, args []string) {
 				log.Fatalf("error reading from file: %v", err)
 			}
 
-			result, err := lib.ProcessContent(content,
+			result, err := lib.ProcessContent(content, cssContent,
 				strings.TrimSuffix(filepath.Base(inputFile), filepath.Ext(inputFile)),
 				useFullHtml)
 			if err != nil {

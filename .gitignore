@@ -1,4 +1,5 @@
 *.ignore
+ignore.*
 .ignore/
 # configs, logs, and data files
 *.conf
@@ -17,6 +18,10 @@ bin/
 
 # outputs
 *.html
+
+# css preprocessing
+# include css but exclude minified
+*.min.css
 # ignore binary and output directory, but not main module
 markoutput
 markout

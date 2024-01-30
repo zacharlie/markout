@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"embed"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -12,6 +13,27 @@ import (
 	"github.com/gomarkdown/markdown"
 	"github.com/spf13/cobra"
 )
+
+//go:generate go run -tags=process_data data/preprocess.go
+//go:embed data/*.min.css
+var minifiedCssContent embed.FS
+
+func getEmbeddedCssFileContent() (map[string]string, error) {
+
+	var CssStyleFiles = map[string]string{
+		"pandoc": "",
+		"retro":  "",
+	}
+
+	for key := range CssStyleFiles {
+		cssContent, err := minifiedCssContent.ReadFile("data/" + key + ".min.css")
+		CssStyleFiles[key] = string(cssContent)
+		if err != nil {
+			return nil, fmt.Errorf("error reading css file %s", key+".min.css")
+		}
+	}
+	return CssStyleFiles, nil
+}
 
 func WriteOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 	useStdin, _ := cmd.Flags().GetBool("stdin")
@@ -58,7 +80,7 @@ func WriteOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 	}
 }
 
-func ProcessContent(content []byte, title string, useFullHtml bool) ([]byte, error) {
+func ProcessContent(content []byte, cssContent []byte, title string, useFullHtml bool) ([]byte, error) {
 	var htmlContent strings.Builder
 	if useFullHtml {
 		htmlContent.WriteString("<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\"")
@@ -66,7 +88,9 @@ func ProcessContent(content []byte, title string, useFullHtml bool) ([]byte, err
 
 		htmlContent.WriteString(string(title))
 
-		htmlContent.WriteString("</title>\n  </head>\n  <body>\n")
+		htmlContent.WriteString("</title>\n")
+		htmlContent.WriteString(string(cssContent))
+		htmlContent.WriteString("  </head>\n  <body>\n")
 	}
 	htmlContent.Write(markdown.ToHTML([]byte(content), nil, nil))
 
@@ -127,4 +151,90 @@ func FindMarkdownFiles(root string, recurse bool) ([]string, error) {
 	}
 
 	return matches, nil
+}
+
+func GetCssContent(useStyleTheme string, useStyleFile string, useStyleLink string) ([]byte, error) {
+	var cssContent strings.Builder
+
+	minCss, err := getEmbeddedCssFileContent()
+	if err != nil {
+		fmt.Printf("error reading embedded css files: %v", err)
+	}
+
+	if useStyleTheme == "none" &&
+		useStyleFile == "none" &&
+		useStyleLink == "none" {
+		// apply default
+		styleContent := minCss["pandoc"]
+		cssContent.WriteString("    <style>\n    ")
+		cssContent.WriteString(string(styleContent))
+		cssContent.WriteString("\n    </style>\n")
+	} else if useStyleTheme == "pandoc" {
+		styleContent := minCss["pandoc"]
+		cssContent.WriteString("    <style>\n    ")
+		cssContent.WriteString(string(styleContent))
+		cssContent.WriteString("\n    </style>\n")
+	} else if useStyleTheme == "retro" {
+		styleContent := minCss["retro"]
+		cssContent.WriteString("    <style>\n    ")
+		cssContent.WriteString(string(styleContent))
+		cssContent.WriteString("\n    </style>\n")
+	} else if useStyleTheme == "blank" || useStyleTheme == "none" {
+		cssContent.WriteString("")
+	} else {
+		cssContent.WriteString("")
+		fmt.Printf("invalid theme selection - no theme data applied.")
+	}
+
+	if useStyleFile != "none" && useStyleFile != "" {
+
+		styleFileContent, err := os.ReadFile(useStyleFile)
+		if err != nil {
+			fmt.Printf("error reading css file %s: %v", useStyleFile, err)
+		}
+
+		cssContent.WriteString("    <style>\n")
+		cssContent.WriteString(string(styleFileContent))
+		cssContent.WriteString("\n    </style>\n")
+	}
+
+	if useStyleLink == "bulma" {
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString("\n")
+	} else if useStyleLink == "bootstrap" {
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString("\n")
+	} else if useStyleLink == "tachyons" {
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString("\n")
+	} else if useStyleLink == "milligram" {
+		cssContent.WriteString(`    <!-- Google Fonts -->`)
+		cssContent.WriteString("\n")
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">`)
+		cssContent.WriteString("\n")
+		cssContent.WriteString(`    <!-- CSS Reset -->`)
+		cssContent.WriteString("\n")
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">`)
+		cssContent.WriteString("\n")
+		cssContent.WriteString(`    <!-- Milligram CSS -->`)
+		cssContent.WriteString("\n")
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">`)
+		cssContent.WriteString("\n")
+	} else if useStyleLink == "pure" {
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString("\n")
+	} else if useStyleLink == "wing" {
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://unpkg.com/wingcss" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString("\n")
+	} else if useStyleLink == "pico" {
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString("\n")
+	} else if useStyleLink != "none" && useStyleLink != "" {
+		cssContent.WriteString(`    <link rel="stylesheet" href="`)
+		cssContent.WriteString(useStyleLink)
+		cssContent.WriteString(`" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString("\n")
+	}
+
+	return []byte(cssContent.String()), nil
 }
