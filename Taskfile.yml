@@ -3,9 +3,14 @@ version: '3'
 tasks:
   build:
     cmds:
-      - go generate ./...
       - go build -o markout{{exeExt}} cmd/markout/main.go
+    deps:
+      - generate
 
+  generate:
+    cmds:
+      - go generate ./...
+      
   test:
     cmds:
       - go test -v ./...
@@ -18,7 +23,8 @@ tasks:
   clean:
     cmds:
       - go clean -cache
-  
+      - go run internal/cmd/clean/main.go
+
   tidy:
     cmds:
       - go mod tidy
@@ -40,6 +46,7 @@ tasks:
     cmds:
       - task clean
       - task tidy
+      - task generate
       - task lint
       - task test
       - task build

@@ -55,6 +55,6 @@ func minifyCss(fileName string) {
 		panic(err)
 	}
 
-	fmt.Printf("css file %s minified", outputFile)
+	fmt.Printf("css file %s minified\n", outputFile)
 
 }
