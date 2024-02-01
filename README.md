@@ -29,12 +29,14 @@ Flags:
   -f, --full               Write complete HTML page (including head, with md content in body)
   -s, --style              Path to a css file. Contents are injected into a <style> block (default "none")
   -l, --link               Text value to insert into the href attribute of <link rel="stylesheet" />. (default "none")
-  -t, --theme              A predefined css to embed. Options include "blank", "pandoc", and "retro". (default "none")
+  -t, --theme              A predefined css to embed. Options include "none", "pandoc", and "retro". (default "none")
 ```
 
 If stdin is used, the output file will be named `MarkOut.html`.
 
-If no input file is supplied, all file in the working directory with an `.md` or `.markdown` extension will be converted.
+If stdout is used, the response will be written as raw html (no use of `--full`), otherwise `-f` is assumed by default for file outputs.
+
+If no input file is supplied, all files in the current working directory with an `.md` or `.markdown` extension will be converted.
 
 ```sh
 cp ./markout ./examples/markout && cd ./examples && ./markout
@@ -51,7 +53,7 @@ markout -f
 Overwrite outputs and remove stylesheets
 
 ```sh
-markout -f -w -t blank
+markout -f -w -t none
 ```
 
 Use link (cdn theme)
@@ -158,7 +160,7 @@ CSS Themes can be injected into the *page* to make your markdown pretty, assumin
 
 There are three types of CSS support for style management included in markout, namely:
 
-  - **themes**: These baked in themes are minified and injected directly into the page in a `<style>` block. The are assigned by name (e.g. `retro`). If no other style options are specified, the *pandoc* theme will be applied by default. Styles can be removed entirely by using `-t blank` to specify the blank theme.
+  - **themes**: These baked in themes are minified and injected directly into the page in a `<style>` block. The are assigned by name (e.g. `retro`). If no other style options are specified, the *pandoc* theme will be applied by default. Styles can be removed entirely by using `-t none` to disable the default theme.
   - **styles**: The path to a stylesheet file that will have its contents injected directly into the page within a `<style>` block.
   - **links**: Links come from the interwebs and load via CDNs (so therefore require an active internet connection and  to function on the output pages). This has a ton of benefits, but also caveats (e.g. CORS issues) when loading your pages locally. You can specify a link to include as an href attribute, or select one of the predefined css frameworks by name (e.g. `-l bulma`).
 

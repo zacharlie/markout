@@ -161,24 +161,24 @@ func GetCssContent(useStyleTheme string, useStyleFile string, useStyleLink strin
 		fmt.Printf("error reading embedded css files: %v", err)
 	}
 
-	if useStyleTheme == "none" &&
-		useStyleFile == "none" &&
-		useStyleLink == "none" {
-		// apply default
+	if useStyleTheme == "undefined" &&
+		useStyleFile == "undefined" &&
+		useStyleLink == "undefined" {
+		// apply default theme
 		styleContent := minCss["pandoc"]
-		cssContent.WriteString("    <style>\n    ")
+		cssContent.WriteString("    <style>")
 		cssContent.WriteString(string(styleContent))
-		cssContent.WriteString("\n    </style>\n")
+		cssContent.WriteString("</style>\n")
 	} else if useStyleTheme == "pandoc" {
 		styleContent := minCss["pandoc"]
-		cssContent.WriteString("    <style>\n    ")
+		cssContent.WriteString("    <style>")
 		cssContent.WriteString(string(styleContent))
-		cssContent.WriteString("\n    </style>\n")
+		cssContent.WriteString("</style>\n")
 	} else if useStyleTheme == "retro" {
 		styleContent := minCss["retro"]
-		cssContent.WriteString("    <style>\n    ")
+		cssContent.WriteString("    <style>")
 		cssContent.WriteString(string(styleContent))
-		cssContent.WriteString("\n    </style>\n")
+		cssContent.WriteString("</style>\n")
 	} else if useStyleTheme == "blank" || useStyleTheme == "none" {
 		cssContent.WriteString("")
 	} else {
@@ -186,16 +186,16 @@ func GetCssContent(useStyleTheme string, useStyleFile string, useStyleLink strin
 		fmt.Printf("invalid theme selection - no theme data applied.")
 	}
 
-	if useStyleFile != "none" && useStyleFile != "" {
+	if useStyleFile != "undefined" && useStyleFile != "none" && useStyleFile != "" {
 
 		styleFileContent, err := os.ReadFile(useStyleFile)
 		if err != nil {
 			fmt.Printf("error reading css file %s: %v", useStyleFile, err)
 		}
 
-		cssContent.WriteString("    <style>\n")
+		cssContent.WriteString("    <style>")
 		cssContent.WriteString(string(styleFileContent))
-		cssContent.WriteString("\n    </style>\n")
+		cssContent.WriteString("</style>\n")
 	}
 
 	if useStyleLink == "bulma" {
@@ -229,7 +229,7 @@ func GetCssContent(useStyleTheme string, useStyleFile string, useStyleLink strin
 	} else if useStyleLink == "pico" {
 		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
-	} else if useStyleLink != "none" && useStyleLink != "" {
+	} else if useStyleLink != "undefined" && useStyleLink != "none" && useStyleLink != "" {
 		cssContent.WriteString(`    <link rel="stylesheet" href="`)
 		cssContent.WriteString(useStyleLink)
 		cssContent.WriteString(`" crossorigin="anonymous" referrerpolicy="no-referrer" />`)

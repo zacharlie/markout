@@ -14,7 +14,11 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "markout",
 	Short: "Convert Markdown files to HTML",
-	Run:   convertMarkdown,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// Calculate and set the default value of the flag here
+		calculateAndSetDefaultValues(cmd)
+	},
+	Run: convertMarkdown,
 }
 
 var (
@@ -30,6 +34,22 @@ var (
 	useStyleLink     string
 )
 
+func calculateAndSetDefaultValues(cmd *cobra.Command) {
+	stdout, _ := cmd.Flags().GetBool("stdout")
+	if !stdout && !cmd.Flags().Changed("full") {
+		cmd.Flags().Set("full", "true")
+	}
+	if !cmd.Flags().Changed("theme") {
+		cmd.Flags().Set("theme", "undefined")
+	}
+	if !cmd.Flags().Changed("style") {
+		cmd.Flags().Set("style", "undefined")
+	}
+	if !cmd.Flags().Changed("link") {
+		cmd.Flags().Set("link", "undefined")
+	}
+}
+
 func init() {
 	rootCmd.Flags().StringVarP(&outputDir, "outdir", "d", "./markoutput", `Output directory`)
 	rootCmd.Flags().StringVarP(&defaultExtension, "extension", "e", ".html", `Output file extension`)
@@ -38,7 +58,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&useStdout, "stdout", "o", false, `Print output to stdout`)
 	rootCmd.Flags().BoolVarP(&runRecursive, "recurse", "r", false, `Run recursively on subdirectory contents`)
 	rootCmd.Flags().BoolVarP(&useFullHtml, "full", "f", false, `Write complete HTML page (including head, with md content in body)`)
-	rootCmd.Flags().StringVarP(&useStyleTheme, "theme", "t", "none", `A predefined css to embed. Options include "blank", "pandoc", and "retro".`)
+	rootCmd.Flags().StringVarP(&useStyleTheme, "theme", "t", "none", `A predefined css to embed. Options include "none", "pandoc", and "retro".`)
 	rootCmd.Flags().StringVarP(&useStyleFile, "style", "s", "none", `Path to a css file. Contents are injected into a <style> block`)
 	rootCmd.Flags().StringVarP(&useStyleLink, "link", "l", "none", `Text value to insert into the href attribute of <link rel="stylesheet" />.`)
 }
