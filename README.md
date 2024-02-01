@@ -199,6 +199,12 @@ Explicit support for script etc aren't expected to be supported, because it's no
 
 E.g. `</style><script>alert('Naughty!')</script><style>` and then `markout README.md -o -f -w -l milligram -s injection.js > mischief.html`.
 
+You can sanitize the HTML using `-c` or `--sanitize` to clean the output, but it uses the UGCPolicy settings and is pretty heavy handed.
+
+It would sanitize the output HTML by stripping unsupported tag elements from the input markdown content, but will also strip out all of the page wrapping information (head/ body) and is incompatible with `-f` features.
+
+E.g. `markout README.md -o -f -w -l milligram -s injection.js -c > mischief.html`
+
 ## Development
 
 Requires [Task](https://taskfile.dev/), easily installable with `go install github.com/go-task/task/v3/cmd/task@latest`

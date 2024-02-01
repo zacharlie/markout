@@ -32,6 +32,7 @@ var (
 	useStyleTheme    string
 	useStyleFile     string
 	useStyleLink     string
+	sanitizeOutput   bool
 )
 
 func calculateAndSetDefaultValues(cmd *cobra.Command) {
@@ -61,6 +62,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&useStyleTheme, "theme", "t", "light", `A predefined css to embed. Options include "none", "light", and "dark".`)
 	rootCmd.Flags().StringVarP(&useStyleFile, "style", "s", "none", `Path to a css file. Contents are injected into a <style> block`)
 	rootCmd.Flags().StringVarP(&useStyleLink, "link", "l", "none", `Text value to insert into the href attribute of <link rel="stylesheet" />.`)
+	rootCmd.Flags().BoolVarP(&sanitizeOutput, "sanitize", "c", false, `Sanitize the HTML output with bluemonday`)
 }
 
 func convertMarkdown(cmd *cobra.Command, args []string) {

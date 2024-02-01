@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/gomarkdown/markdown"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/spf13/cobra"
 )
 
@@ -41,6 +42,12 @@ func WriteOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 	outputDir, _ := cmd.Flags().GetString("outdir")
 	overwrite, _ := cmd.Flags().GetBool("overwrite")
 	useStdout, _ := cmd.Flags().GetBool("stdout")
+
+	sanitizeOutput, _ := cmd.Flags().GetBool("sanitize")
+	if sanitizeOutput {
+		// Sanitize output HTML if requested
+		result = sanitizeHtml(result)
+	}
 
 	if useStdout {
 		// Write to stdout
@@ -179,7 +186,7 @@ func GetCssContent(useStyleTheme string, useStyleFile string, useStyleLink strin
 		cssContent.WriteString("    <style>")
 		cssContent.WriteString(string(styleContent))
 		cssContent.WriteString("</style>\n")
-	} else if useStyleTheme == "blank" || useStyleTheme == "none" {
+	} else if useStyleTheme == "undefined" || useStyleTheme == "blank" || useStyleTheme == "none" {
 		cssContent.WriteString("")
 	} else {
 		cssContent.WriteString("")
@@ -199,35 +206,43 @@ func GetCssContent(useStyleTheme string, useStyleFile string, useStyleLink strin
 	}
 
 	if useStyleLink == "bulma" {
-		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"` +
+			` crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 	} else if useStyleLink == "bootstrap" {
-		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"` +
+			` crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 	} else if useStyleLink == "tachyons" {
-		cssContent.WriteString(`    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"` +
+			`crossorigin="anonymous"  referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 	} else if useStyleLink == "milligram" {
 		cssContent.WriteString(`    <!-- Google Fonts -->`)
 		cssContent.WriteString("\n")
-		cssContent.WriteString(`    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">`)
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic"` +
+			` crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 		cssContent.WriteString(`    <!-- CSS Reset -->`)
 		cssContent.WriteString("\n")
-		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">`)
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css"` +
+			` crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 		cssContent.WriteString(`    <!-- Milligram CSS -->`)
 		cssContent.WriteString("\n")
-		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">`)
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css"` +
+			` crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 	} else if useStyleLink == "pure" {
-		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"` +
+			` crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 	} else if useStyleLink == "wing" {
 		cssContent.WriteString(`    <link rel="stylesheet" href="https://unpkg.com/wingcss" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 	} else if useStyleLink == "pico" {
-		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />`)
+		cssContent.WriteString(`    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"` +
+			` crossorigin="anonymous" referrerpolicy="no-referrer" />`)
 		cssContent.WriteString("\n")
 	} else if useStyleLink != "undefined" && useStyleLink != "none" && useStyleLink != "" {
 		cssContent.WriteString(`    <link rel="stylesheet" href="`)
@@ -237,4 +252,9 @@ func GetCssContent(useStyleTheme string, useStyleFile string, useStyleLink strin
 	}
 
 	return []byte(cssContent.String()), nil
+}
+
+func sanitizeHtml(inputHtml []byte) []byte {
+	sanitizedHtml := bluemonday.UGCPolicy().SanitizeBytes(inputHtml)
+	return sanitizedHtml
 }
