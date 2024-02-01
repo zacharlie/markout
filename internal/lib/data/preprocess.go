@@ -13,8 +13,8 @@ import (
 )
 
 var CssFileNames = []string{
-	"pandoc",
-	"retro",
+	"light",
+	"dark",
 }
 
 func main() {

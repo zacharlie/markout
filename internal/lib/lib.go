@@ -21,8 +21,8 @@ var minifiedCssContent embed.FS
 func getEmbeddedCssFileContent() (map[string]string, error) {
 
 	var CssStyleFiles = map[string]string{
-		"pandoc": "",
-		"retro":  "",
+		"light": "",
+		"dark":  "",
 	}
 
 	for key := range CssStyleFiles {
@@ -165,17 +165,17 @@ func GetCssContent(useStyleTheme string, useStyleFile string, useStyleLink strin
 		useStyleFile == "undefined" &&
 		useStyleLink == "undefined" {
 		// apply default theme
-		styleContent := minCss["pandoc"]
+		styleContent := minCss["light"]
 		cssContent.WriteString("    <style>")
 		cssContent.WriteString(string(styleContent))
 		cssContent.WriteString("</style>\n")
-	} else if useStyleTheme == "pandoc" {
-		styleContent := minCss["pandoc"]
+	} else if useStyleTheme == "light" {
+		styleContent := minCss["light"]
 		cssContent.WriteString("    <style>")
 		cssContent.WriteString(string(styleContent))
 		cssContent.WriteString("</style>\n")
-	} else if useStyleTheme == "retro" {
-		styleContent := minCss["retro"]
+	} else if useStyleTheme == "dark" {
+		styleContent := minCss["dark"]
 		cssContent.WriteString("    <style>")
 		cssContent.WriteString(string(styleContent))
 		cssContent.WriteString("</style>\n")

@@ -58,7 +58,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&useStdout, "stdout", "o", false, `Print output to stdout`)
 	rootCmd.Flags().BoolVarP(&runRecursive, "recurse", "r", false, `Run recursively on subdirectory contents`)
 	rootCmd.Flags().BoolVarP(&useFullHtml, "full", "f", false, `Write complete HTML page (including head, with md content in body)`)
-	rootCmd.Flags().StringVarP(&useStyleTheme, "theme", "t", "none", `A predefined css to embed. Options include "none", "pandoc", and "retro".`)
+	rootCmd.Flags().StringVarP(&useStyleTheme, "theme", "t", "light", `A predefined css to embed. Options include "none", "light", and "dark".`)
 	rootCmd.Flags().StringVarP(&useStyleFile, "style", "s", "none", `Path to a css file. Contents are injected into a <style> block`)
 	rootCmd.Flags().StringVarP(&useStyleLink, "link", "l", "none", `Text value to insert into the href attribute of <link rel="stylesheet" />.`)
 }

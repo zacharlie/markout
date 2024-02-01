@@ -13,23 +13,24 @@ markout input.md -o > output.html
 ## Usage
 
 ```text
+
 Convert Markdown files to HTML
 
 Usage:
   markout [flags]
 
 Flags:
-  -h, --help               help for markout
-  -i, --stdin              Read input from stdin
-  -o, --stdout             Print output to stdout
-  -w, --overwrite          Overwrite existing output files
-  -r, --recurse            Run recursively on subdirectory contents
-  -e, --extension          Output file extension (default ".html")
-  -d, --outdir             Output directory (default "./markoutput")
-  -f, --full               Write complete HTML page (including head, with md content in body)
-  -s, --style              Path to a css file. Contents are injected into a <style> block (default "none")
-  -l, --link               Text value to insert into the href attribute of <link rel="stylesheet" />. (default "none")
-  -t, --theme              A predefined css to embed. Options include "none", "pandoc", and "retro". (default "none")
+  -h, --help         help for markout
+  -i, --stdin        Read input from stdin
+  -o, --stdout       Print output to stdout
+  -w, --overwrite    Overwrite existing output files
+  -r, --recurse      Run recursively on subdirectory contents
+  -e, --extension    Output file extension (default ".html")
+  -d, --outdir       Output directory (default "./markoutput")
+  -f, --full         Write complete HTML page (including head, with md content in body)
+  -s, --style        Path to a css file. Contents are injected into a <style> block (default "none")
+  -l, --link         Text value to insert into the href attribute of <link rel="stylesheet" />. (default "none")
+  -t, --theme        A predefined css to embed. Options include "none", "light", and "dark". (default "light")
 ```
 
 If stdin is used, the output file will be named `MarkOut.html`.
@@ -160,7 +161,7 @@ CSS Themes can be injected into the *page* to make your markdown pretty, assumin
 
 There are three types of CSS support for style management included in markout, namely:
 
-  - **themes**: These baked in themes are minified and injected directly into the page in a `<style>` block. The are assigned by name (e.g. `retro`). If no other style options are specified, the *pandoc* theme will be applied by default. Styles can be removed entirely by using `-t none` to disable the default theme.
+  - **themes**: These baked in themes are minified and injected directly into the page in a `<style>` block. The are assigned by name (e.g. `dark`). If no other style options are specified, the *light* theme will be applied by default. Styles can be removed entirely by using `-t none` to disable the default theme.
   - **styles**: The path to a stylesheet file that will have its contents injected directly into the page within a `<style>` block.
   - **links**: Links come from the interwebs and load via CDNs (so therefore require an active internet connection and  to function on the output pages). This has a ton of benefits, but also caveats (e.g. CORS issues) when loading your pages locally. You can specify a link to include as an href attribute, or select one of the predefined css frameworks by name (e.g. `-l bulma`).
 
@@ -172,8 +173,8 @@ If you need more control over your markdown styling, it is likely that you are u
 
 The following themes are included OOTB:
 
-  - [pandoc](https://gist.github.com/killercup/5917178)
-  - [retro](https://markdowncss.github.io/retro/)
+  - light
+  - dark
 
 Sourced from the community, they may have their own license considerations. Yolo.
 

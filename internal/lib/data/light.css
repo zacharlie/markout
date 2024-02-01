@@ -1,0 +1,121 @@
+body {
+  width:80%;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  color: #555;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #333;
+}
+
+a {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #004080;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+blockquote {
+  border-left: 2px solid #0066cc;
+  margin: 0;
+  padding-left: 15px;
+  color: #666;
+}
+
+pre {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-x: auto;
+  color: #333;
+}
+
+code {
+  font-family: 'Courier New', monospace;
+  color: #000275;
+}
+
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+hr {
+  border: 1px solid #dee2e6;
+  margin: 30px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #dee2e6;
+}
+
+th {
+  background-color: #f8f9fa;
+}
+
+@media screen and (max-width: 600px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Printing */
+@media print {
+  
+  body {
+    background-color: #fff; /* White background for print */
+  }
+
+  a {
+    text-decoration: none; /* Remove underline for links in print */
+    color: #000; /* Darken link color for better readability */
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0; /* Remove border-radius for images in print */
+  }
+
+  table {
+    page-break-inside: auto; /* Avoid breaking tables across pages */
+  }
+
+  pre {
+    font-size: 0.7rem;
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+   }
+
+}
