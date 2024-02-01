@@ -1,16 +1,16 @@
-version: '3'
+version: "3"
 
 tasks:
   build:
     cmds:
-      - go build -o markout{{exeExt}} cmd/markout/main.go
+      - go build -o markout{{exeExt}} cmd/markout/main.go {{.CLI_ARGS}}
     deps:
       - generate
 
   generate:
     cmds:
       - go generate ./...
-      
+
   test:
     cmds:
       - go test -v ./...
@@ -32,7 +32,7 @@ tasks:
       - go mod tidy
       # add preprocessor dependencies used by generate but ignored by build
       - go get github.com/tdewolff/minify/v2
-  
+
   run:
     desc: Run the application to print all relative inputs to stdout
     cmds:
