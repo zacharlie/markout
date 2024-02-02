@@ -42,6 +42,7 @@ func WriteOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 	outputDir, _ := cmd.Flags().GetString("outdir")
 	overwrite, _ := cmd.Flags().GetBool("overwrite")
 	useStdout, _ := cmd.Flags().GetBool("stdout")
+	printToPdf, _ := cmd.Flags().GetBool("pdf")
 
 	sanitizeOutput, _ := cmd.Flags().GetBool("sanitize")
 	if sanitizeOutput {
@@ -75,6 +76,19 @@ func WriteOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 		err := os.WriteFile(outputPath, []byte(string(result)), 0644)
 		if err != nil {
 			return fmt.Errorf("error writing output file %s: %v", outputPath, err)
+		}
+
+		if printToPdf {
+			outputPdf := filepath.Join(outputDir, strings.TrimSuffix(filepath.Base(inputFile), filepath.Ext(inputFile))+".pdf")
+			err := htmlToPdf(result, outputPdf)
+			if !overwrite {
+				if _, err := os.Stat(outputPdf); err == nil {
+					return fmt.Errorf("output pdf %s already exists, use -w or --overwrite to replace", outputPdf)
+				}
+			}
+			if err != nil {
+				log.Printf("error generating pdf %s: %s", outputPdf, err)
+			}
 		}
 
 		if useStdin {

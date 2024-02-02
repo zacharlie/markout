@@ -33,6 +33,7 @@ var (
 	useStyleFile     string
 	useStyleLink     string
 	sanitizeOutput   bool
+	printToPdf       bool
 )
 
 func calculateAndSetDefaultValues(cmd *cobra.Command) {
@@ -63,6 +64,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&useStyleFile, "style", "s", "none", `Path to a css file. Contents are injected into a <style> block`)
 	rootCmd.Flags().StringVarP(&useStyleLink, "link", "l", "none", `Text value to insert into the href attribute of <link rel="stylesheet" />.`)
 	rootCmd.Flags().BoolVarP(&sanitizeOutput, "sanitize", "c", false, `Sanitize the HTML output with bluemonday`)
+	rootCmd.Flags().BoolVarP(&printToPdf, "pdf", "p", false, `Save a pdf copy of the output (when writing files only).`)
 }
 
 func convertMarkdown(cmd *cobra.Command, args []string) {

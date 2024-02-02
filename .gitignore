@@ -18,6 +18,7 @@ bin/
 
 # outputs
 *.html
+*.pdf
 
 # css preprocessing
 # include css but exclude minified
