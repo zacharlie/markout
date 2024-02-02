@@ -8,6 +8,7 @@ tasks:
       - generate
 
   generate:
+    run: once
     cmds:
       - go generate ./...
 
