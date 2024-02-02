@@ -13,24 +13,25 @@ markout input.md -o > output.html
 ## Usage
 
 ```text
-
 Convert Markdown files to HTML
 
 Usage:
   markout [flags]
 
 Flags:
-  -h, --help         help for markout
-  -i, --stdin        Read input from stdin
-  -o, --stdout       Print output to stdout
-  -w, --overwrite    Overwrite existing output files
-  -r, --recurse      Run recursively on subdirectory contents
-  -e, --extension    Output file extension (default ".html")
-  -d, --outdir       Output directory (default "./markoutput")
-  -f, --full         Write complete HTML page (including head, with md content in body)
-  -s, --style        Path to a css file. Contents are injected into a <style> block (default "none")
-  -l, --link         Text value to insert into the href attribute of <link rel="stylesheet" />. (default "none")
-  -t, --theme        A predefined css to embed. Options include "none", "light", and "dark". (default "light")
+  -i, --stdin              Read input from stdin
+  -o, --stdout             Print output to stdout
+  -p, --pdf                Save a pdf copy of the output (when writing files only).
+  -w, --overwrite          Overwrite existing output files
+  -r, --recurse            Run recursively on subdirectory contents
+  -c, --sanitize           Sanitize the HTML output with bluemonday
+  -e, --extension string   Output file extension (default ".html")
+  -d, --outdir string      Output directory (default "./markoutput")
+  -f, --full               Write complete HTML page (including head, with md content in body)
+  -s, --style string       Path to a css file. Contents are injected into a <style> block (default "none")
+  -l, --link string        Text value to insert into the href attribute of <link rel="stylesheet" />. (default "none")
+  -t, --theme string       A predefined css to embed. Options include "none", "light", and "dark". (default "light")
+  -h, --help               help for markout
 ```
 
 If stdin is used, the output file will be named `MarkOut.html`.
@@ -49,6 +50,12 @@ Process all markdown files in working directory, generating full page output wit
 
 ```sh
 markout -f
+```
+
+Produce a pdf copy of the html output
+
+```sh
+markout -p
 ```
 
 Overwrite outputs and remove stylesheets

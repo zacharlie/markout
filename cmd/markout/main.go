@@ -53,18 +53,20 @@ func calculateAndSetDefaultValues(cmd *cobra.Command) {
 }
 
 func init() {
-	rootCmd.Flags().StringVarP(&outputDir, "outdir", "d", "./markoutput", `Output directory`)
-	rootCmd.Flags().StringVarP(&defaultExtension, "extension", "e", ".html", `Output file extension`)
-	rootCmd.Flags().BoolVarP(&overwriteOutput, "overwrite", "w", false, `Overwrite existing output files`)
 	rootCmd.Flags().BoolVarP(&useStdin, "stdin", "i", false, `Read input from stdin`)
 	rootCmd.Flags().BoolVarP(&useStdout, "stdout", "o", false, `Print output to stdout`)
+	rootCmd.Flags().BoolVarP(&printToPdf, "pdf", "p", false, `Save a pdf copy of the output (when writing files only).`)
+	rootCmd.Flags().BoolVarP(&overwriteOutput, "overwrite", "w", false, `Overwrite existing output files`)
 	rootCmd.Flags().BoolVarP(&runRecursive, "recurse", "r", false, `Run recursively on subdirectory contents`)
+	rootCmd.Flags().BoolVarP(&sanitizeOutput, "sanitize", "c", false, `Sanitize the HTML output with bluemonday`)
+	rootCmd.Flags().StringVarP(&defaultExtension, "extension", "e", ".html", `Output file extension`)
+	rootCmd.Flags().StringVarP(&outputDir, "outdir", "d", "./markoutput", `Output directory`)
 	rootCmd.Flags().BoolVarP(&useFullHtml, "full", "f", false, `Write complete HTML page (including head, with md content in body)`)
-	rootCmd.Flags().StringVarP(&useStyleTheme, "theme", "t", "light", `A predefined css to embed. Options include "none", "light", and "dark".`)
 	rootCmd.Flags().StringVarP(&useStyleFile, "style", "s", "none", `Path to a css file. Contents are injected into a <style> block`)
 	rootCmd.Flags().StringVarP(&useStyleLink, "link", "l", "none", `Text value to insert into the href attribute of <link rel="stylesheet" />.`)
-	rootCmd.Flags().BoolVarP(&sanitizeOutput, "sanitize", "c", false, `Sanitize the HTML output with bluemonday`)
-	rootCmd.Flags().BoolVarP(&printToPdf, "pdf", "p", false, `Save a pdf copy of the output (when writing files only).`)
+	rootCmd.Flags().StringVarP(&useStyleTheme, "theme", "t", "light", `A predefined css to embed. Options include "none", "light", and "dark".`)
+	rootCmd.Flags().SortFlags = false
+	rootCmd.PersistentFlags().SortFlags = false
 }
 
 func convertMarkdown(cmd *cobra.Command, args []string) {
