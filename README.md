@@ -4,7 +4,9 @@ Simple cli for md => html
 
 > This is not a static site generator. This is not pandoc. It's Markdown in, HTML out.
 
-Accepts file list or stdin, writes files to directory or logs result to stdout.
+Accepts arguments as a file list or uses the `-i` flag to accept stdin from a pipe.
+
+Parses markdown to html and writes output html files to directory, or logs result to stdout using the `-o` flag.
 
 ```sh
 markout input.md -o > output.html
@@ -26,7 +28,7 @@ Flags:
   -r, --recurse            Run recursively on subdirectory contents
   -c, --sanitize           Sanitize the HTML output with bluemonday
   -e, --extension string   Output file extension (default ".html")
-  -d, --outdir string      Output directory (default "./markoutput")
+  -d, --directory string      Output directory (default "./markoutput")
   -f, --full               Write complete HTML page (including head, with md content in body)
   -s, --style string       Path to a css file. Contents are injected into a <style> block (default "none")
   -l, --link string        Text value to insert into the href attribute of <link rel="stylesheet" />. (default "none")

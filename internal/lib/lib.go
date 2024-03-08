@@ -39,7 +39,7 @@ func getEmbeddedCssFileContent() (map[string]string, error) {
 func WriteOutput(cmd *cobra.Command, result []byte, inputFile string) error {
 	useStdin, _ := cmd.Flags().GetBool("stdin")
 	defaultExtension, _ := cmd.Flags().GetString("extension")
-	outputDir, _ := cmd.Flags().GetString("outdir")
+	outputDir, _ := cmd.Flags().GetString("directory")
 	overwrite, _ := cmd.Flags().GetBool("overwrite")
 	useStdout, _ := cmd.Flags().GetBool("stdout")
 	printToPdf, _ := cmd.Flags().GetBool("pdf")

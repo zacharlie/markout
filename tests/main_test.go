@@ -35,7 +35,7 @@ func TestFileInputOutput(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("go", "run", wd+"/../cmd/markout/main.go", "--outdir", tempDir, markdownPath)
+	cmd := exec.Command("go", "run", wd+"/../cmd/markout/main.go", "--directory", tempDir, markdownPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("Error running markout command: %v\nOutput:\n%s", err, output)
