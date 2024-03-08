@@ -18,7 +18,7 @@ var rootCmd = &cobra.Command{
 		// Calculate and set the default value of the flag here
 		preFlightChecks(cmd, args)
 	},
-	Run: convertMarkdown,
+	Run: processMarkout,
 }
 
 var (
@@ -90,7 +90,25 @@ func init() {
 	rootCmd.PersistentFlags().SortFlags = false
 }
 
-func convertMarkdown(cmd *cobra.Command, args []string) {
+func convertMarkdown(cmd *cobra.Command, inputFile string, cssContent []byte) {
+	content, err := lib.ReadInput(inputFile)
+	if err != nil {
+		log.Fatalf("error reading from file: %v", err)
+	}
+
+	result, err := lib.ProcessContent(content, cssContent,
+		strings.TrimSuffix(filepath.Base(inputFile), filepath.Ext(inputFile)),
+		useFullHtml)
+	if err != nil {
+		log.Fatalf("Error processing file %s: %v\n", inputFile, err)
+	}
+	err = lib.WriteOutput(cmd, result, inputFile)
+	if err != nil {
+		log.Fatalf("error writing output: %v", err)
+	}
+}
+
+func processMarkout(cmd *cobra.Command, args []string) {
 	cssContent, err := lib.GetCssContent(
 		strings.ToLower(useStyleTheme),
 		strings.ToLower(useStyleFile),
@@ -133,21 +151,25 @@ func convertMarkdown(cmd *cobra.Command, args []string) {
 			log.Fatalf("error writing output: %v", err)
 		}
 	} else {
-		for _, inputFile := range args {
-			content, err := lib.ReadInput(inputFile)
+		for _, inputArg := range args {
+			fileInfo, err := os.Stat(inputArg)
 			if err != nil {
-				log.Fatalf("error reading from file: %v", err)
+				log.Fatalf("error accessing file or directory: %v", err)
 			}
 
-			result, err := lib.ProcessContent(content, cssContent,
-				strings.TrimSuffix(filepath.Base(inputFile), filepath.Ext(inputFile)),
-				useFullHtml)
-			if err != nil {
-				log.Fatalf("Error processing file %s: %v\n", inputFile, err)
-			}
-			err = lib.WriteOutput(cmd, result, inputFile)
-			if err != nil {
-				log.Fatalf("error writing output: %v", err)
+			if fileInfo.IsDir() {
+				mdFiles, err := lib.FindMarkdownFiles(inputArg, runRecursive)
+				if err != nil {
+					log.Fatalf("error getting files: %v", err)
+				} else if len(mdFiles) == 0 {
+					log.Fatalf("no markdown files found in directory: %s", inputArg)
+				}
+
+				for _, inputFile := range mdFiles {
+					convertMarkdown(cmd, inputFile, cssContent)
+				}
+			} else {
+				convertMarkdown(cmd, inputArg, cssContent)
 			}
 		}
 	}
